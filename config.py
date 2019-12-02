@@ -8,4 +8,4 @@ pin5V = 12
 pinLBO = 25
 
 # Log file location
-logFile = "./monitor.log"
+logFile = "/home/pi/PiwerManager/monitor.log"

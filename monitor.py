@@ -13,7 +13,6 @@
 # Import the necessary modules
 import RPi.GPIO as gpio
 from time import sleep
-import daemon
 # Import local modules
 import config
 import log
@@ -26,11 +25,11 @@ def edgeDetected(channel):
 	sleep(1)
 
 	# Shutdown the Raspberry Pi if the battery is low
-	if channel == config.pinLBO:
+	if channel == config.pinLBO and not gpio.input(channel):
 		log.logMessage("Low battery detected. Shutting down.")
 		shutdown()
 	# Logs if the wall power has been unplugged or plugged in
-	elif channel == pin5V:
+	elif channel == config.pin5V:
 		# Rising edge (0 to 1)
 		if gpio.input(channel):
 			log.logMessage("Wall power plugged in.")
@@ -48,13 +47,12 @@ gpio.add_event_detect(config.pin5V, gpio.BOTH, callback = edgeDetected, bounceti
 gpio.add_event_detect(config.pinLBO, gpio.FALLING, callback = edgeDetected, bouncetime = 3000)
 
 # Main loop utilizing a daemon to run it from the background
-with daemon.DaemonContext():
-	try:
-		# Pause for 120 seconds to reduce power usage
-		while(True):
-			sleep(120)
-	# Stops the loop with keyboard interrupt
-	except KeyboardInterrupt:
-		pass
-	finally:
-		gpio.cleanup()  # Closes the inputs for the GPIO
+try:
+	# Pause for 120 seconds to reduce power usage
+	while(True):
+		sleep(120)
+# Stops the loop with keyboard interrupt
+except KeyboardInterrupt:
+	pass
+finally:
+	gpio.cleanup()  # Closes the inputs for the GPIO
