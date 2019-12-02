@@ -44,7 +44,8 @@ gpio.setup(config.pinLBO, gpio.IN, pull_up_down = gpio.PUD_UP)  # Set up an impu
 
 # Add the edge detection on this channel. Bouncetime is set to 3s to prevent duplicate activations
 gpio.add_event_detect(config.pin5V, gpio.BOTH, callback = edgeDetected, bouncetime = 3000)
-gpio.add_event_detect(config.pinLBO, gpio.FALLING, callback = edgeDetected, bouncetime = 3000)
+# 65s bouncetime to prevent another activation within the scheduled shutdown time
+gpio.add_event_detect(config.pinLBO, gpio.FALLING, callback = edgeDetected, bouncetime = 65000)
 
 # Main loop utilizing a daemon to run it from the background
 try:
