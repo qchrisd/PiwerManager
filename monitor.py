@@ -12,10 +12,11 @@
 
 # Import the necessary modules
 import RPi.GPIO as gpio
-import emailStatus as email
+from time import sleep
+import daemon
+# Import local modules
 import config
 import log
-from time import sleep
 from shutdown import shutdown
 
 # Callback functions for when edge is detected
@@ -46,13 +47,14 @@ gpio.setup(config.pinLBO, gpio.IN, pull_up_down = gpio.PUD_UP)  # Set up an impu
 gpio.add_event_detect(config.pin5V, gpio.BOTH, callback = edgeDetected, bouncetime = 3000)
 gpio.add_event_detect(config.pinLBO, gpio.FALLING, callback = edgeDetected, bouncetime = 3000)
 
-# Main loop
-try:
-	# Pause for 120 seconds to reduce power usage
-	while(True):
-		sleep(120)
-# Stops the loop with keyboard interrupt
-except KeyboardInterrupt:
-	pass
-finally:
-	gpio.cleanup()  # Closes the inputs for the GPIO
+# Main loop utilizing a daemon to run it from the background
+with daemon.DaemonContext():
+	try:
+		# Pause for 120 seconds to reduce power usage
+		while(True):
+			sleep(120)
+	# Stops the loop with keyboard interrupt
+	except KeyboardInterrupt:
+		pass
+	finally:
+		gpio.cleanup()  # Closes the inputs for the GPIO
