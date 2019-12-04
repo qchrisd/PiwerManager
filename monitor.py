@@ -29,7 +29,7 @@ def edgeDetected(channel):
 		log.logMessage("Low battery detected. Shutting down.")
 		shutdown()
 	# Logs if the wall power has been unplugged or plugged in
-	elif channel == config.pin5V:
+	elif channel == config.pinUSB:
 		# Rising edge (0 to 1)
 		if gpio.input(channel):
 			log.logMessage("Wall power plugged in.")
@@ -39,11 +39,11 @@ def edgeDetected(channel):
 
 # Set up the GPIO pins
 gpio.setmode(gpio.BCM)  # Using Broadcom numbering
-gpio.setup(config.pin5V, gpio.IN, pull_up_down = gpio.PUD_DOWN)  # Set up an input for wall power
+gpio.setup(config.pinUSB, gpio.IN, pull_up_down = gpio.PUD_DOWN)  # Set up an input for wall power
 gpio.setup(config.pinLBO, gpio.IN, pull_up_down = gpio.PUD_UP)  # Set up an imput for low battery
 
 # Add the edge detection on this channel. Bouncetime is set to 3s to prevent duplicate activations
-gpio.add_event_detect(config.pin5V, gpio.BOTH, callback = edgeDetected, bouncetime = 3000)
+gpio.add_event_detect(config.pinUSB, gpio.BOTH, callback = edgeDetected, bouncetime = 3000)
 # 65s bouncetime to prevent another activation within the scheduled shutdown time
 gpio.add_event_detect(config.pinLBO, gpio.FALLING, callback = edgeDetected, bouncetime = 65000)
 

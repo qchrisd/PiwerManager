@@ -4,7 +4,7 @@
 
 
 # GPIO Pins
-pin5V = 12
+pinUSB = 12
 pinLBO = 25
 
 # Log file location
